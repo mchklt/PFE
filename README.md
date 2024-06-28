@@ -588,8 +588,8 @@ In conclusion, the Metasploit Framework's continual evolution, driven by a vibra
 
 # References
 
-https://docs.metasploit.com/
-https://docs.rapid7.com/metasploit/
-https://tryhackme.com/
-https://www.offsec.com/metasploit-unleashed/
-https://olinux.net/wp-content/uploads/2019/01/Metasploit-The-Penetration-Tester-s-Guide.pdf
+- [Metasploit Documentation](https://docs.metasploit.com/)
+- [Rapid7 Metasploit Documentation](https://docs.rapid7.com/metasploit/)
+- [TryHackMe](https://tryhackme.com/)
+- [Metasploit Unleashed by Offensive Security](https://www.offsec.com/metasploit-unleashed/)
+- [Metasploit: The Penetration Tester's Guide](https://olinux.net/wp-content/uploads/2019/01/Metasploit-The-Penetration-Tester-s-Guide.pdf)

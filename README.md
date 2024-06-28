@@ -473,3 +473,123 @@ hashcat --show hash.txt
 ![Screenshot from 2024-06-27 19-56-45](https://github.com/mchklt/PFE/assets/53612008/e5a78e75-55a5-4d3e-a05d-591f7f100bf7)
 
 Now that we have the users' passwords, we can proceed to the next phase of penetration testing: lateral movement.
+
+### 6.2 IceCast
+
+In this section, we will gain access to the target machine using the same strategy as before. The machine's IP is 10.10.59.75, and there is an open port 8000 running a service named IceCast. As a pentester, my first step is to research this service and check for any public exploits or disclosed CVEs.
+
+![Screenshot from 2024-06-28 23-55-50](https://github.com/mchklt/PFE/assets/53612008/6fc423c4-3f84-4025-84a2-76ecdf330b9c)
+
+1. **Finding Public Exploits:**
+To find public exploits for the IceCast service using Metasploit, use the following command:
+```
+search icecast
+```
+
+2. **Identifying the Exploit Module:**
+After researching IceCast, we discovered a module that exploits an overwrite vulnerability. Upon switching to this module, we found that the required variables were similar to the previous one, asking for `RHOSTS`, `RPORT`, `LHOST`, and `LPORT`.
+
+![Screenshot from 2024-06-28 23-58-19](https://github.com/mchklt/PFE/assets/53612008/3dabbf8c-fa07-49ee-bde8-b6d9d3fd0f4d)
+
+3. **Setting Variables and Exploiting:**
+After setting the required variables, let's proceed to exploit it.
+
+![Screenshot from 2024-06-29 00-04-14](https://github.com/mchklt/PFE/assets/53612008/aa9219bd-9d1e-4027-a815-916f5af746c3)
+
+4. **Gaining Meterpreter Session:**
+That's it, we got a Meterpreter session. Now, we are in the vulnerable machine and can perform various actions such as retrieving system information by typing `sysinfo`.
+
+![Screenshot from 2024-06-29 00-08-54](https://github.com/mchklt/PFE/assets/53612008/dc654554-6575-4618-90c7-a3b461d918cf)
+
+5. **Taking a Screenshot:**
+We can also take a screenshot by typing `screenshot`.
+
+![Screenshot from 2024-06-29 00-06-23](https://github.com/mchklt/PFE/assets/53612008/cb883225-e413-40f2-9d79-d0e0759d66b9)
+
+The screenshot is saved in `/home/mchklt/bNZAwQRG.jpeg`. Here is the screenshot that we got:
+
+![bNZAwQRG](https://github.com/mchklt/PFE/assets/53612008/b8dc7b6f-dd12-4ec4-ba15-fa8980ec7313)
+
+
+This section demonstrates the effective use of Metasploit for exploiting vulnerabilities, Metasploit is a powerful tool in penetration testing, capable of identifying, exploiting, and validating security weaknesses across various systems and applications. Its versatility allows it to be used in all phases of penetration testing, from information gathering and vulnerability scanning to exploitation and post-exploitation activities. By leveraging Metasploit, security professionals can comprehensively assess the security posture of their targets and identify areas for improvement.
+
+### Metasploit Cheat Sheet
+
+Metasploit offers a robust set of commands and syntax for effective penetration testing and vulnerability exploitation.
+
+**MSFconsole Commands:**
+
+- `show exploits`: Lists all exploits within the Framework.
+- `show payloads`: Displays available payloads.
+- `show auxiliary`: Shows auxiliary modules.
+- `show options`: Reveals module options.
+- `show targets`: Displays supported platforms.
+- `show advanced`: Accesses advanced options.
+
+**Module Loading and Configuration:**
+
+- `use name`: Loads an exploit or module.
+- `set function`: Sets a specific value.
+- `setg function`: Sets a specific value globally.
+- `set target num`: Specifies a specific target index.
+- `set payload payload`: Specifies the payload to use.
+
+**Exploitation and Interaction:**
+
+- `check`: Determines target vulnerability.
+- `exploit`: Executes the module or exploit.
+- `exploit -j`: Runs the exploit in the background.
+- `exploit -z`: Does not interact post-exploitation.
+
+### Meterpreter Commands
+
+Meterpreter provides extensive post-exploitation capabilities:
+
+**Basic Commands:**
+
+- `help`: Opens Meterpreter usage help.
+- `sysinfo`: Shows system information.
+- `ls`: Lists files and folders.
+- `ps`: Displays running processes.
+
+**Privilege Escalation and Token Manipulation:**
+
+- `getsystem`: Attempts SYSTEM-level access.
+- `use priv`: Loads privilege extension.
+- `list_tokens -u` and `-g`: Lists available tokens.
+
+**File Operations and Keylogging:**
+
+- `upload file`: Uploads a file.
+- `download file`: Downloads a file.
+- `keyscan_start`: Initiates keylogging.
+- `keyscan_dump`: Dumps captured keys.
+
+**System Control and Manipulation:**
+
+- `reboot`: Reboots the target machine.
+- `clearev`: Clears event logs.
+- `timestomp`: Alters file attributes.
+
+# Conclusion
+
+The Metasploit Framework stands as an indispensable tool in the realm of cybersecurity, offering robust capabilities for penetration testing and vulnerability assessment. Through the comprehensive exploration of its features and functionalities in this report, it becomes evident that Metasploit provides security professionals with a powerful platform for identifying, exploiting, and mitigating security weaknesses.
+
+The installation process, detailed across various operating systems, demonstrates the flexibility and accessibility of Metasploit. Its multiple interfaces, including the command-line interface (CLI), graphical user interface (GUI), and web interface, cater to diverse user preferences, enhancing usability and efficiency in security operations.
+
+The practical application of Metasploit, as showcased in the EternalBlue case study, highlights its effectiveness in real-world scenarios. The step-by-step approach—from initial network discovery to exploitation and post-exploitation—illustrates the framework's capability to simulate real-world attacks, providing invaluable insights into system vulnerabilities.
+
+Furthermore, the extensive range of modules, including exploits, auxiliary tools, payloads, encoders, NOPs, and post-exploitation features, underscores Metasploit's versatility. This adaptability is crucial for conducting thorough security assessments, allowing professionals to tailor their approach based on specific objectives and target environments.
+
+Meterpreter, as an integral part of Metasploit, enhances post-exploitation capabilities, offering advanced features such as privilege escalation, keylogging, and persistence. These functionalities enable deeper penetration and control over compromised systems, facilitating comprehensive security evaluations.
+
+In conclusion, the Metasploit Framework's continual evolution, driven by a vibrant community and maintained by Rapid7, ensures it remains at the forefront of cybersecurity tools. Its practical applications in both academic and professional settings make it an invaluable resource for current and future security professionals. By adhering to strict ethical guidelines and legal compliance, Metasploit reinforces the integrity of security practices, cementing its role as a cornerstone of modern cybersecurity.
+
+
+#References
+
+https://docs.metasploit.com/
+https://docs.rapid7.com/metasploit/
+https://tryhackme.com/
+https://www.offsec.com/metasploit-unleashed/
+https://olinux.net/wp-content/uploads/2019/01/Metasploit-The-Penetration-Tester-s-Guide.pdf
